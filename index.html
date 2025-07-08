@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator">
+            <div class="display-container">
+                <div class="display-secondary" id="secondaryDisplay"></div>
+                <div class="display-primary" id="primaryDisplay">0</div>
+            </div>
+            
+            <!-- Scientific Functions Row (can be toggled) -->
+            <div class="scientific-row">
+                <button class="btn scientific" data-action="sin">sin</button>
+                <button class="btn scientific" data-action="cos">cos</button>
+                <button class="btn scientific" data-action="tan">tan</button>
+                <button class="btn scientific" data-action="log">log</button>
+                <button class="btn scientific" data-action="ln">ln</button>
+            </div>
+            
+            <div class="scientific-row">
+                <button class="btn scientific" data-action="sqrt">√</button>
+                <button class="btn scientific" data-action="power">x²</button>
+                <button class="btn scientific" data-action="powerOf">x^y</button>
+                <button class="btn scientific" data-action="factorial">x!</button>
+                <button class="btn scientific" data-action="pi">π</button>
+            </div>
+            
+            <!-- Standard Calculator Layout -->
+            <div class="buttons-grid">
+                <!-- Row 1: Clear functions and divide -->
+                <button class="btn function" data-action="clear">C</button>
+                <button class="btn function" data-action="clearEntry">CE</button>
+                <button class="btn function" data-action="backspace">⌫</button>
+                <button class="btn operator" data-action="divide">÷</button>
+                
+                <!-- Row 2: Numbers 7-9 and multiply -->
+                <button class="btn number" data-number="7">7</button>
+                <button class="btn number" data-number="8">8</button>
+                <button class="btn number" data-number="9">9</button>
+                <button class="btn operator" data-action="multiply">×</button>
+                
+                <!-- Row 3: Numbers 4-6 and subtract -->
+                <button class="btn number" data-number="4">4</button>
+                <button class="btn number" data-number="5">5</button>
+                <button class="btn number" data-number="6">6</button>
+                <button class="btn operator" data-action="subtract">−</button>
+                
+                <!-- Row 4: Numbers 1-3 and add -->
+                <button class="btn number" data-number="1">1</button>
+                <button class="btn number" data-number="2">2</button>
+                <button class="btn number" data-number="3">3</button>
+                <button class="btn operator add" data-action="add">+</button>
+                
+                <!-- Row 5: Zero, decimal, negate and equals -->
+                <button class="btn number zero" data-number="0">0</button>
+                <button class="btn function" data-action="decimal">.</button>
+                <button class="btn function" data-action="negate">±</button>
+                <button class="btn equals" data-action="equals">=</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
