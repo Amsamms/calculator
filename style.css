@@ -12,6 +12,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    overflow-x: hidden;
 }
 
 .calculator-container {
@@ -27,8 +28,9 @@ body {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
     padding: 20px;
-    width: 320px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 350px;
+    min-width: 0;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
@@ -92,6 +94,13 @@ body {
     -webkit-tap-highlight-color: transparent;
     min-height: 60px;
     touch-action: manipulation;
+    /* Prevent text selection on mobile */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Improve touch targets */
+    min-width: 44px;
 }
 
 .btn:active {
@@ -209,42 +218,138 @@ body {
 }
 
 /* Mobile responsiveness */
-@media (max-width: 480px) {
-    body {
-        padding: 10px;
+/* Tablet breakpoint */
+@media (max-width: 768px) and (min-width: 601px) {
+    .calculator-container {
+        max-width: 450px;
+        padding: 20px;
     }
     
     .calculator {
-        width: 100%;
-        max-width: 100%;
-        padding: 15px;
+        padding: 20px;
     }
     
     .btn {
         height: 65px;
         font-size: 18px;
-        min-height: 65px;
     }
     
     .btn.number {
         font-size: 20px;
     }
     
-    .btn.operator {
-        font-size: 22px;
-    }
-    
-    .btn.equals {
-        font-size: 22px;
+    .btn.operator, .btn.equals {
+        font-size: 24px;
     }
     
     .btn.scientific {
-        font-size: 11px;
+        font-size: 13px;
         height: 50px;
     }
     
     .display-primary {
-        font-size: 28px;
+        font-size: 30px;
+    }
+    
+    .display-secondary {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 15px;
+        align-items: flex-start;
+        min-height: 100vh;
+    }
+    
+    .calculator-container {
+        padding: 15px;
+        max-width: 400px;
+        width: 100%;
+        margin: 0 auto;
+    }
+    
+    .calculator {
+        max-width: 100%;
+        padding: 15px;
+    }
+    
+    .display-container {
+        padding: 15px;
+        min-height: 70px;
+    }
+    
+    .display-primary {
+        font-size: 24px;
+    }
+    
+    .display-secondary {
+        font-size: 13px;
+    }
+    
+    .buttons-grid {
+        gap: 8px;
+    }
+    
+    .scientific-row {
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+    
+    .btn {
+        height: 55px;
+        min-height: 55px;
+        font-size: 16px;
+        border-radius: 10px;
+    }
+    
+    .btn.number {
+        font-size: 18px;
+    }
+    
+    .btn.operator, .btn.equals {
+        font-size: 20px;
+    }
+    
+    .btn.scientific {
+        font-size: 11px;
+        height: 42px;
+    }
+}
+
+@media (max-width: 360px) {
+    .calculator-container {
+        padding: 10px;
+        max-width: 320px;
+    }
+    
+    .calculator {
+        padding: 12px;
+    }
+    
+    .btn {
+        height: 50px;
+        font-size: 14px;
+        min-height: 50px;
+        border-radius: 8px;
+    }
+    
+    .btn.number {
+        font-size: 16px;
+    }
+    
+    .btn.operator, .btn.equals {
+        font-size: 18px;
+    }
+    
+    .btn.scientific {
+        font-size: 10px;
+        height: 38px;
+    }
+    
+    .display-primary {
+        font-size: 20px;
     }
     
     .display-secondary {
@@ -252,49 +357,7 @@ body {
     }
     
     .buttons-grid {
-        gap: 10px;
-    }
-    
-    .scientific-row {
         gap: 6px;
-        margin-bottom: 8px;
-    }
-}
-
-@media (max-width: 360px) {
-    .calculator {
-        padding: 12px;
-    }
-    
-    .btn {
-        height: 60px;
-        font-size: 16px;
-        min-height: 60px;
-    }
-    
-    .btn.number {
-        font-size: 18px;
-    }
-    
-    .btn.operator {
-        font-size: 20px;
-    }
-    
-    .btn.equals {
-        font-size: 20px;
-    }
-    
-    .btn.scientific {
-        font-size: 10px;
-        height: 45px;
-    }
-    
-    .display-primary {
-        font-size: 24px;
-    }
-    
-    .buttons-grid {
-        gap: 8px;
     }
     
     .scientific-row {
@@ -309,13 +372,25 @@ body {
         padding: 10px;
     }
     
+    .calculator-container {
+        max-width: 500px;
+        padding: 10px;
+    }
+    
     .calculator {
         width: 100%;
         max-width: 500px;
+        padding: 15px;
     }
     
     .btn {
         height: 45px;
+        font-size: 16px;
+    }
+    
+    .btn.scientific {
+        height: 35px;
+        font-size: 11px;
     }
     
     .display-container {
@@ -325,5 +400,18 @@ body {
     
     .display-primary {
         font-size: 24px;
+    }
+    
+    .display-secondary {
+        font-size: 14px;
+    }
+    
+    .buttons-grid {
+        gap: 8px;
+    }
+    
+    .scientific-row {
+        gap: 6px;
+        margin-bottom: 6px;
     }
 }
