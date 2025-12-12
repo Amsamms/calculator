@@ -1,130 +1,120 @@
 /**
- * Scientific Calculator Pro
- * A modern, multi-layer scientific calculator with history and theme support
+ * Advanced Scientific Calculator
+ * Features: Multi-mode calculator, equation solver, statistics, unit conversions
  */
 
-class ScientificCalculator {
+class AdvancedCalculator {
     constructor() {
-        // Display elements
-        this.expressionDisplay = document.getElementById('expression');
-        this.resultDisplay = document.getElementById('result');
-
-        // State
+        // Calculator state
         this.currentInput = '0';
-        this.expression = '';
         this.previousInput = '';
         this.operator = null;
         this.waitingForOperand = false;
-        this.lastResult = null;
+        this.secondOperand = false; // For two-argument functions
+        this.pendingFunction = null;
         this.isRadians = true;
-
-        // History
         this.history = [];
-        this.maxHistory = 20;
+        this.maxHistory = 30;
 
-        // UI Elements
+        // DOM Elements
+        this.expressionDisplay = document.getElementById('expression');
+        this.resultDisplay = document.getElementById('result');
         this.historyPanel = document.getElementById('historyPanel');
         this.historyList = document.getElementById('historyList');
-        this.historyToggle = document.getElementById('historyToggle');
-        this.clearHistoryBtn = document.getElementById('clearHistory');
-        this.themeToggle = document.getElementById('themeToggle');
-        this.angleToggle = document.getElementById('angleToggle');
-        this.layerTabs = document.querySelectorAll('.layer-tab');
-        this.layerContents = document.querySelectorAll('.layer-content');
 
         this.init();
     }
 
     init() {
-        // Load saved data
         this.loadTheme();
         this.loadHistory();
+        this.setupEventListeners();
+        this.setupModeNavigation();
+        this.setupEquationSolver();
+        this.setupStatistics();
+        this.setupConverters();
+        this.updateDisplay();
+    }
 
-        // Event listeners
+    // ==================== Event Listeners ====================
+    setupEventListeners() {
+        // Calculator buttons
         document.addEventListener('click', this.handleClick.bind(this));
         document.addEventListener('keydown', this.handleKeydown.bind(this));
 
         // Theme toggle
-        this.themeToggle?.addEventListener('click', () => this.toggleTheme());
+        document.getElementById('themeToggle')?.addEventListener('click', () => this.toggleTheme());
 
         // History toggle
-        this.historyToggle?.addEventListener('click', () => this.toggleHistory());
-        this.clearHistoryBtn?.addEventListener('click', () => this.clearHistory());
+        document.getElementById('historyToggle')?.addEventListener('click', () => this.toggleHistory());
+        document.getElementById('clearHistory')?.addEventListener('click', () => this.clearHistory());
 
         // Angle mode toggle
-        this.angleToggle?.addEventListener('click', () => this.toggleAngleMode());
+        document.getElementById('angleToggle')?.addEventListener('click', () => this.toggleAngleMode());
 
         // Layer tabs
-        this.layerTabs.forEach(tab => {
+        document.querySelectorAll('.layer-tab').forEach(tab => {
             tab.addEventListener('click', () => this.switchLayer(tab.dataset.layer));
         });
-
-        // Update displays
-        this.updateDisplay();
     }
 
-    // ==================== Theme Management ====================
+    setupModeNavigation() {
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(`mode-${btn.dataset.mode}`)?.classList.add('active');
+            });
+        });
+    }
 
+    // ==================== Theme ====================
     loadTheme() {
-        const savedTheme = localStorage.getItem('calculator-theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        const theme = localStorage.getItem('calc-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
     }
 
     toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('calculator-theme', newTheme);
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('calc-theme', next);
     }
 
     // ==================== Angle Mode ====================
-
     toggleAngleMode() {
         this.isRadians = !this.isRadians;
-        const label = this.angleToggle.querySelector('.mode-label');
-        label.textContent = this.isRadians ? 'RAD' : 'DEG';
-        this.angleToggle.classList.toggle('active', !this.isRadians);
+        const toggle = document.getElementById('angleToggle');
+        toggle.querySelector('.mode-label').textContent = this.isRadians ? 'RAD' : 'DEG';
+        toggle.classList.toggle('active', !this.isRadians);
     }
 
-    // ==================== Layer Management ====================
-
-    switchLayer(layerName) {
-        this.layerTabs.forEach(tab => {
-            tab.classList.toggle('active', tab.dataset.layer === layerName);
-        });
-
-        this.layerContents.forEach(content => {
-            content.classList.toggle('active', content.id === `layer-${layerName}`);
-        });
+    // ==================== Layer Switching ====================
+    switchLayer(layer) {
+        document.querySelectorAll('.layer-tab').forEach(t => t.classList.toggle('active', t.dataset.layer === layer));
+        document.querySelectorAll('.layer-content').forEach(c => c.classList.toggle('active', c.id === `layer-${layer}`));
     }
 
-    // ==================== History Management ====================
-
+    // ==================== History ====================
     toggleHistory() {
-        this.historyPanel.classList.toggle('open');
+        this.historyPanel?.classList.toggle('open');
     }
 
     loadHistory() {
         try {
-            const saved = localStorage.getItem('calculator-history');
-            if (saved) {
-                this.history = JSON.parse(saved);
-                this.renderHistory();
-            }
-        } catch (e) {
-            this.history = [];
-        }
+            this.history = JSON.parse(localStorage.getItem('calc-history') || '[]');
+            this.renderHistory();
+        } catch { this.history = []; }
     }
 
     saveHistory() {
-        localStorage.setItem('calculator-history', JSON.stringify(this.history));
+        localStorage.setItem('calc-history', JSON.stringify(this.history));
     }
 
-    addToHistory(expression, result) {
-        this.history.unshift({ expression, result, timestamp: Date.now() });
-        if (this.history.length > this.maxHistory) {
-            this.history.pop();
-        }
+    addToHistory(expr, result) {
+        this.history.unshift({ expr, result, time: Date.now() });
+        if (this.history.length > this.maxHistory) this.history.pop();
         this.saveHistory();
         this.renderHistory();
     }
@@ -137,26 +127,22 @@ class ScientificCalculator {
 
     renderHistory() {
         if (!this.historyList) return;
-
         if (this.history.length === 0) {
             this.historyList.innerHTML = '<div class="history-empty">No calculations yet</div>';
             return;
         }
-
-        this.historyList.innerHTML = this.history.map((item, index) => `
-            <div class="history-item" data-index="${index}">
-                <div class="history-expression">${this.escapeHtml(item.expression)}</div>
+        this.historyList.innerHTML = this.history.map((item, i) => `
+            <div class="history-item" data-index="${i}">
+                <div class="history-expression">${this.escapeHtml(item.expr)}</div>
                 <div class="history-result">= ${this.escapeHtml(item.result)}</div>
             </div>
         `).join('');
 
-        // Add click handlers to history items
-        this.historyList.querySelectorAll('.history-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const index = parseInt(item.dataset.index);
-                const historyItem = this.history[index];
-                if (historyItem) {
-                    this.currentInput = historyItem.result;
+        this.historyList.querySelectorAll('.history-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const item = this.history[parseInt(el.dataset.index)];
+                if (item) {
+                    this.currentInput = item.result.replace(/,/g, '');
                     this.updateDisplay();
                     this.toggleHistory();
                 }
@@ -164,14 +150,13 @@ class ScientificCalculator {
         });
     }
 
-    escapeHtml(text) {
+    escapeHtml(str) {
         const div = document.createElement('div');
-        div.textContent = text;
+        div.textContent = str;
         return div.innerHTML;
     }
 
-    // ==================== Event Handlers ====================
-
+    // ==================== Input Handling ====================
     handleClick(e) {
         const btn = e.target.closest('.btn');
         if (!btn) return;
@@ -179,60 +164,24 @@ class ScientificCalculator {
         const action = btn.dataset.action;
         const number = btn.dataset.number;
 
-        // Add button press feedback
-        btn.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            btn.style.transform = '';
-        }, 100);
-
-        if (number !== undefined) {
-            this.inputNumber(number);
-        } else if (action) {
-            this.handleAction(action);
-        }
+        if (number !== undefined) this.inputNumber(number);
+        else if (action) this.handleAction(action);
     }
 
     handleKeydown(e) {
-        // Don't prevent default for all keys
         const key = e.key;
-
-        if (key >= '0' && key <= '9') {
-            e.preventDefault();
-            this.inputNumber(key);
-        } else if (key === '.') {
-            e.preventDefault();
-            this.handleAction('decimal');
-        } else if (key === '+') {
-            e.preventDefault();
-            this.handleAction('add');
-        } else if (key === '-') {
-            e.preventDefault();
-            this.handleAction('subtract');
-        } else if (key === '*') {
-            e.preventDefault();
-            this.handleAction('multiply');
-        } else if (key === '/') {
-            e.preventDefault();
-            this.handleAction('divide');
-        } else if (key === 'Enter' || key === '=') {
-            e.preventDefault();
-            this.handleAction('equals');
-        } else if (key === 'Escape') {
-            e.preventDefault();
-            this.handleAction('clear');
-        } else if (key === 'Backspace') {
-            e.preventDefault();
-            this.handleAction('backspace');
-        } else if (key === '%') {
-            e.preventDefault();
-            this.handleAction('percent');
-        } else if (key === '^') {
-            e.preventDefault();
-            this.handleAction('powerOf');
-        }
+        if (/^[0-9]$/.test(key)) { e.preventDefault(); this.inputNumber(key); }
+        else if (key === '.') { e.preventDefault(); this.handleAction('decimal'); }
+        else if (key === '+') { e.preventDefault(); this.handleAction('add'); }
+        else if (key === '-') { e.preventDefault(); this.handleAction('subtract'); }
+        else if (key === '*') { e.preventDefault(); this.handleAction('multiply'); }
+        else if (key === '/') { e.preventDefault(); this.handleAction('divide'); }
+        else if (key === 'Enter' || key === '=') { e.preventDefault(); this.handleAction('equals'); }
+        else if (key === 'Escape') { e.preventDefault(); this.handleAction('clear'); }
+        else if (key === 'Backspace') { e.preventDefault(); this.handleAction('backspace'); }
+        else if (key === '%') { e.preventDefault(); this.handleAction('percent'); }
+        else if (key === '^') { e.preventDefault(); this.handleAction('powerOf'); }
     }
-
-    // ==================== Input Handling ====================
 
     inputNumber(num) {
         if (this.waitingForOperand) {
@@ -241,145 +190,169 @@ class ScientificCalculator {
         } else {
             this.currentInput = this.currentInput === '0' ? num : this.currentInput + num;
         }
-
-        // Limit input length
-        if (this.currentInput.length > 15) {
-            this.currentInput = this.currentInput.slice(0, 15);
-        }
-
+        if (this.currentInput.length > 16) this.currentInput = this.currentInput.slice(0, 16);
         this.updateDisplay();
     }
 
     handleAction(action) {
         const actions = {
-            'add': () => this.handleOperator('+'),
-            'subtract': () => this.handleOperator('-'),
-            'multiply': () => this.handleOperator('*'),
-            'divide': () => this.handleOperator('/'),
-            'equals': () => this.calculate(),
-            'decimal': () => this.inputDecimal(),
-            'clear': () => this.clear(),
-            'clearEntry': () => this.clearEntry(),
-            'backspace': () => this.backspace(),
-            'negate': () => this.negate(),
-            'percent': () => this.percent(),
-            'sin': () => this.sin(),
-            'cos': () => this.cos(),
-            'tan': () => this.tan(),
-            'asin': () => this.asin(),
-            'acos': () => this.acos(),
-            'log': () => this.log(),
-            'ln': () => this.ln(),
-            'sqrt': () => this.sqrt(),
-            'power': () => this.power(),
-            'powerOf': () => this.powerOf(),
-            'factorial': () => this.factorial(),
-            'pi': () => this.pi(),
-            'e': () => this.e(),
-            'inverse': () => this.inverse(),
+            // Basic operators
+            add: () => this.handleOperator('+'),
+            subtract: () => this.handleOperator('-'),
+            multiply: () => this.handleOperator('*'),
+            divide: () => this.handleOperator('/'),
+            equals: () => this.calculate(),
+            decimal: () => this.inputDecimal(),
+            clear: () => this.clear(),
+            clearEntry: () => this.clearEntry(),
+            backspace: () => this.backspace(),
+            negate: () => this.negate(),
+            percent: () => this.applyFunction(x => x / 100, '%'),
+
+            // Basic functions
+            sqrt: () => this.applyFunction(Math.sqrt, '√'),
+            cbrt: () => this.applyFunction(Math.cbrt, '³√'),
+            power: () => this.applyFunction(x => x * x, 'sqr'),
+            cube: () => this.applyFunction(x => x * x * x, 'cube'),
+            powerOf: () => this.handleOperator('^'),
+            nthroot: () => this.handleOperator('nthroot'),
+            exp10: () => this.applyFunction(x => Math.pow(10, x), '10^'),
+            inverse: () => this.applyFunction(x => x !== 0 ? 1 / x : NaN, '1/'),
+            abs: () => this.applyFunction(Math.abs, 'abs'),
+
+            // Trigonometry
+            sin: () => this.applyTrig(Math.sin, 'sin'),
+            cos: () => this.applyTrig(Math.cos, 'cos'),
+            tan: () => this.applyTrig(Math.tan, 'tan'),
+            csc: () => this.applyTrig(x => 1 / Math.sin(x), 'csc'),
+            sec: () => this.applyTrig(x => 1 / Math.cos(x), 'sec'),
+            cot: () => this.applyTrig(x => 1 / Math.tan(x), 'cot'),
+            asin: () => this.applyInverseTrig(Math.asin, 'asin'),
+            acos: () => this.applyInverseTrig(Math.acos, 'acos'),
+            atan: () => this.applyInverseTrig(Math.atan, 'atan'),
+            atan2: () => this.handleOperator('atan2'),
+
+            // Hyperbolic
+            sinh: () => this.applyFunction(Math.sinh, 'sinh'),
+            cosh: () => this.applyFunction(Math.cosh, 'cosh'),
+            tanh: () => this.applyFunction(Math.tanh, 'tanh'),
+            csch: () => this.applyFunction(x => 1 / Math.sinh(x), 'csch'),
+            sech: () => this.applyFunction(x => 1 / Math.cosh(x), 'sech'),
+            coth: () => this.applyFunction(x => 1 / Math.tanh(x), 'coth'),
+            asinh: () => this.applyFunction(Math.asinh, 'asinh'),
+            acosh: () => this.applyFunction(Math.acosh, 'acosh'),
+            atanh: () => this.applyFunction(Math.atanh, 'atanh'),
+            exp: () => this.applyFunction(Math.exp, 'e^'),
+
+            // Logarithms
+            log: () => this.applyFunction(Math.log10, 'log'),
+            ln: () => this.applyFunction(Math.log, 'ln'),
+            log2: () => this.applyFunction(Math.log2, 'log₂'),
+            logbase: () => this.handleOperator('logbase'),
+
+            // Combinatorics
+            factorial: () => this.applyFunction(this.factorial.bind(this), 'fact'),
+            nPr: () => this.handleOperator('nPr'),
+            nCr: () => this.handleOperator('nCr'),
+            gcd: () => this.handleOperator('gcd'),
+            lcm: () => this.handleOperator('lcm'),
+            mod: () => this.handleOperator('mod'),
+
+            // Constants
+            pi: () => { this.currentInput = String(Math.PI); this.updateDisplay(); },
+            e: () => { this.currentInput = String(Math.E); this.updateDisplay(); },
+            phi: () => { this.currentInput = String((1 + Math.sqrt(5)) / 2); this.updateDisplay(); },
+            sqrt2: () => { this.currentInput = String(Math.SQRT2); this.updateDisplay(); },
+            sqrt3: () => { this.currentInput = String(Math.sqrt(3)); this.updateDisplay(); },
+            ln2: () => { this.currentInput = String(Math.LN2); this.updateDisplay(); },
+            ln10: () => { this.currentInput = String(Math.LN10); this.updateDisplay(); },
+            c: () => { this.currentInput = '299792458'; this.updateDisplay(); }, // Speed of light
+            g: () => { this.currentInput = '9.80665'; this.updateDisplay(); }, // Gravity
+            rand: () => { this.currentInput = String(Math.random()); this.updateDisplay(); },
         };
 
-        if (actions[action]) {
-            actions[action]();
-        }
+        if (actions[action]) actions[action]();
     }
 
-    // ==================== Operators ====================
-
-    handleOperator(nextOperator) {
-        const inputValue = parseFloat(this.currentInput);
+    // ==================== Operations ====================
+    handleOperator(op) {
+        const value = parseFloat(this.currentInput);
 
         if (this.previousInput === '') {
-            this.previousInput = inputValue;
+            this.previousInput = value;
         } else if (this.operator && !this.waitingForOperand) {
-            const currentValue = this.previousInput || 0;
-            const newValue = this.performCalculation(currentValue, inputValue, this.operator);
-
-            if (newValue === 'Error') {
+            const result = this.performCalculation(this.previousInput, value, this.operator);
+            if (!isFinite(result)) {
                 this.currentInput = 'Error';
                 this.previousInput = '';
                 this.operator = null;
                 this.updateDisplay();
                 return;
             }
-
-            this.currentInput = this.formatNumber(newValue);
-            this.previousInput = newValue;
+            this.currentInput = this.formatNumber(result);
+            this.previousInput = result;
         }
 
         this.waitingForOperand = true;
-        this.operator = nextOperator;
+        this.operator = op;
         this.updateExpressionDisplay();
-
-        // Highlight active operator button
-        this.highlightOperator(nextOperator);
-    }
-
-    highlightOperator(op) {
-        document.querySelectorAll('.btn.op').forEach(btn => {
-            btn.classList.remove('active');
-        });
-
-        const opMap = { '+': 'add', '-': 'subtract', '*': 'multiply', '/': 'divide' };
-        const actionName = opMap[op];
-        if (actionName) {
-            const btn = document.querySelector(`[data-action="${actionName}"]`);
-            if (btn) btn.classList.add('active');
-        }
+        this.highlightOperator(op);
     }
 
     calculate() {
-        if (this.operator && this.previousInput !== '' && !this.waitingForOperand) {
-            const inputValue = parseFloat(this.currentInput);
-            const currentValue = this.previousInput || 0;
-            const newValue = this.performCalculation(currentValue, inputValue, this.operator);
+        if (!this.operator || this.previousInput === '' || this.waitingForOperand) return;
 
-            // Build expression for history
-            const opSymbol = { '+': '+', '-': '−', '*': '×', '/': '÷', '^': '^' };
-            const expr = `${this.formatNumber(currentValue)} ${opSymbol[this.operator] || this.operator} ${this.formatNumber(inputValue)}`;
+        const value = parseFloat(this.currentInput);
+        const result = this.performCalculation(this.previousInput, value, this.operator);
 
-            if (newValue === 'Error') {
-                this.currentInput = 'Error';
-            } else {
-                this.currentInput = this.formatNumber(newValue);
-                this.lastResult = newValue;
-                this.addToHistory(expr, this.currentInput);
-            }
+        const opSymbols = { '+': '+', '-': '−', '*': '×', '/': '÷', '^': '^',
+            mod: 'mod', gcd: 'gcd', lcm: 'lcm', nPr: 'P', nCr: 'C',
+            nthroot: '√', logbase: 'log', atan2: 'atan2' };
+        const expr = `${this.formatNumber(this.previousInput)} ${opSymbols[this.operator] || this.operator} ${this.formatNumber(value)}`;
 
-            this.previousInput = '';
-            this.operator = null;
-            this.waitingForOperand = false;
-            this.expression = '';
+        if (!isFinite(result)) {
+            this.currentInput = 'Error';
+        } else {
+            this.currentInput = this.formatNumber(result);
+            this.addToHistory(expr, this.currentInput);
+        }
 
-            this.updateDisplay();
-            this.clearExpressionDisplay();
+        this.previousInput = '';
+        this.operator = null;
+        this.waitingForOperand = false;
+        this.updateDisplay();
+        this.clearExpressionDisplay();
+        document.querySelectorAll('.btn.op').forEach(b => b.classList.remove('active'));
+    }
 
-            // Remove operator highlights
-            document.querySelectorAll('.btn.op').forEach(btn => {
-                btn.classList.remove('active');
-            });
+    performCalculation(a, b, op) {
+        switch (op) {
+            case '+': return a + b;
+            case '-': return a - b;
+            case '*': return a * b;
+            case '/': return b !== 0 ? a / b : NaN;
+            case '^': return Math.pow(a, b);
+            case 'mod': return a % b;
+            case 'gcd': return this.gcd(Math.abs(Math.round(a)), Math.abs(Math.round(b)));
+            case 'lcm': return this.lcm(Math.abs(Math.round(a)), Math.abs(Math.round(b)));
+            case 'nPr': return this.permutation(Math.round(a), Math.round(b));
+            case 'nCr': return this.combination(Math.round(a), Math.round(b));
+            case 'nthroot': return Math.pow(a, 1 / b);
+            case 'logbase': return Math.log(a) / Math.log(b);
+            case 'atan2': return this.isRadians ? Math.atan2(a, b) : this.toDegrees(Math.atan2(a, b));
+            default: return b;
         }
     }
 
-    performCalculation(firstOperand, secondOperand, operator) {
-        switch (operator) {
-            case '+':
-                return firstOperand + secondOperand;
-            case '-':
-                return firstOperand - secondOperand;
-            case '*':
-                return firstOperand * secondOperand;
-            case '/':
-                return secondOperand !== 0 ? firstOperand / secondOperand : 'Error';
-            case '^':
-                return Math.pow(firstOperand, secondOperand);
-            default:
-                return secondOperand;
+    highlightOperator(op) {
+        document.querySelectorAll('.btn.op').forEach(b => b.classList.remove('active'));
+        const opMap = { '+': 'add', '-': 'subtract', '*': 'multiply', '/': 'divide' };
+        if (opMap[op]) {
+            document.querySelector(`[data-action="${opMap[op]}"]`)?.classList.add('active');
         }
     }
 
-    // ==================== Basic Operations ====================
-
+    // ==================== Basic Functions ====================
     inputDecimal() {
         if (this.waitingForOperand) {
             this.currentInput = '0.';
@@ -387,7 +360,6 @@ class ScientificCalculator {
         } else if (!this.currentInput.includes('.')) {
             this.currentInput += '.';
         }
-
         this.updateDisplay();
     }
 
@@ -396,14 +368,9 @@ class ScientificCalculator {
         this.previousInput = '';
         this.operator = null;
         this.waitingForOperand = false;
-        this.expression = '';
-
         this.updateDisplay();
         this.clearExpressionDisplay();
-
-        document.querySelectorAll('.btn.op').forEach(btn => {
-            btn.classList.remove('active');
-        });
+        document.querySelectorAll('.btn.op').forEach(b => b.classList.remove('active'));
     }
 
     clearEntry() {
@@ -412,252 +379,473 @@ class ScientificCalculator {
     }
 
     backspace() {
-        if (this.currentInput === 'Error') {
-            this.currentInput = '0';
-        } else if (this.currentInput.length > 1) {
-            this.currentInput = this.currentInput.slice(0, -1);
-        } else {
-            this.currentInput = '0';
-        }
+        if (this.currentInput === 'Error') this.currentInput = '0';
+        else if (this.currentInput.length > 1) this.currentInput = this.currentInput.slice(0, -1);
+        else this.currentInput = '0';
         this.updateDisplay();
     }
 
     negate() {
         if (this.currentInput !== '0' && this.currentInput !== 'Error') {
-            if (this.currentInput.startsWith('-')) {
-                this.currentInput = this.currentInput.slice(1);
-            } else {
-                this.currentInput = '-' + this.currentInput;
-            }
+            this.currentInput = this.currentInput.startsWith('-')
+                ? this.currentInput.slice(1)
+                : '-' + this.currentInput;
         }
         this.updateDisplay();
-    }
-
-    percent() {
-        const value = parseFloat(this.currentInput);
-        if (!isNaN(value)) {
-            this.currentInput = this.formatNumber(value / 100);
-            this.updateDisplay();
-        }
     }
 
     // ==================== Scientific Functions ====================
-
-    sin() {
+    applyFunction(fn, name) {
         const value = parseFloat(this.currentInput);
-        const angle = this.isRadians ? value : this.toRadians(value);
-        const result = Math.sin(angle);
-        this.setScientificResult('sin', value, result);
-    }
-
-    cos() {
-        const value = parseFloat(this.currentInput);
-        const angle = this.isRadians ? value : this.toRadians(value);
-        const result = Math.cos(angle);
-        this.setScientificResult('cos', value, result);
-    }
-
-    tan() {
-        const value = parseFloat(this.currentInput);
-        const angle = this.isRadians ? value : this.toRadians(value);
-        const result = Math.tan(angle);
-        this.setScientificResult('tan', value, result);
-    }
-
-    asin() {
-        const value = parseFloat(this.currentInput);
-        if (value < -1 || value > 1) {
+        const result = fn(value);
+        if (!isFinite(result)) {
             this.currentInput = 'Error';
         } else {
-            let result = Math.asin(value);
+            this.currentInput = this.formatNumber(result);
+            this.addToHistory(`${name}(${this.formatNumber(value)})`, this.currentInput);
+        }
+        this.updateDisplay();
+    }
+
+    applyTrig(fn, name) {
+        const value = parseFloat(this.currentInput);
+        const angle = this.isRadians ? value : this.toRadians(value);
+        const result = fn(angle);
+        if (!isFinite(result)) {
+            this.currentInput = 'Error';
+        } else {
+            this.currentInput = this.formatNumber(result);
+            this.addToHistory(`${name}(${this.formatNumber(value)})`, this.currentInput);
+        }
+        this.updateDisplay();
+    }
+
+    applyInverseTrig(fn, name) {
+        const value = parseFloat(this.currentInput);
+        let result = fn(value);
+        if (!isFinite(result)) {
+            this.currentInput = 'Error';
+        } else {
             if (!this.isRadians) result = this.toDegrees(result);
-            this.setScientificResult('sin⁻¹', value, result);
+            this.currentInput = this.formatNumber(result);
+            this.addToHistory(`${name}(${this.formatNumber(value)})`, this.currentInput);
         }
         this.updateDisplay();
     }
 
-    acos() {
-        const value = parseFloat(this.currentInput);
-        if (value < -1 || value > 1) {
-            this.currentInput = 'Error';
-        } else {
-            let result = Math.acos(value);
-            if (!this.isRadians) result = this.toDegrees(result);
-            this.setScientificResult('cos⁻¹', value, result);
-        }
-        this.updateDisplay();
+    toRadians(deg) { return deg * Math.PI / 180; }
+    toDegrees(rad) { return rad * 180 / Math.PI; }
+
+    factorial(n) {
+        n = Math.round(n);
+        if (n < 0 || n > 170) return NaN;
+        if (n === 0 || n === 1) return 1;
+        let result = 1;
+        for (let i = 2; i <= n; i++) result *= i;
+        return result;
     }
 
-    log() {
-        const value = parseFloat(this.currentInput);
-        if (value > 0) {
-            const result = Math.log10(value);
-            this.setScientificResult('log', value, result);
-        } else {
-            this.currentInput = 'Error';
-            this.updateDisplay();
-        }
+    gcd(a, b) { return b === 0 ? a : this.gcd(b, a % b); }
+    lcm(a, b) { return (a * b) / this.gcd(a, b); }
+
+    permutation(n, r) {
+        if (r > n || n < 0 || r < 0) return NaN;
+        return this.factorial(n) / this.factorial(n - r);
     }
 
-    ln() {
-        const value = parseFloat(this.currentInput);
-        if (value > 0) {
-            const result = Math.log(value);
-            this.setScientificResult('ln', value, result);
-        } else {
-            this.currentInput = 'Error';
-            this.updateDisplay();
-        }
+    combination(n, r) {
+        if (r > n || n < 0 || r < 0) return NaN;
+        return this.factorial(n) / (this.factorial(r) * this.factorial(n - r));
     }
 
-    sqrt() {
-        const value = parseFloat(this.currentInput);
-        if (value >= 0) {
-            const result = Math.sqrt(value);
-            this.setScientificResult('√', value, result);
-        } else {
-            this.currentInput = 'Error';
-            this.updateDisplay();
-        }
-    }
-
-    power() {
-        const value = parseFloat(this.currentInput);
-        const result = Math.pow(value, 2);
-        this.setScientificResult('sqr', value, result);
-    }
-
-    powerOf() {
-        this.handleOperator('^');
-    }
-
-    factorial() {
-        const value = parseInt(this.currentInput);
-        if (value >= 0 && value <= 170 && Number.isInteger(parseFloat(this.currentInput))) {
-            let result = 1;
-            for (let i = 2; i <= value; i++) {
-                result *= i;
-            }
-            this.setScientificResult('fact', value, result);
-        } else {
-            this.currentInput = 'Error';
-            this.updateDisplay();
-        }
-    }
-
-    pi() {
-        this.currentInput = this.formatNumber(Math.PI);
-        this.updateDisplay();
-    }
-
-    e() {
-        this.currentInput = this.formatNumber(Math.E);
-        this.updateDisplay();
-    }
-
-    inverse() {
-        const value = parseFloat(this.currentInput);
-        if (value !== 0) {
-            const result = 1 / value;
-            this.setScientificResult('1/', value, result);
-        } else {
-            this.currentInput = 'Error';
-            this.updateDisplay();
-        }
-    }
-
-    setScientificResult(funcName, input, result) {
-        const expr = `${funcName}(${this.formatNumber(input)})`;
-        this.currentInput = this.formatNumber(result);
-        this.addToHistory(expr, this.currentInput);
-        this.updateDisplay();
-    }
-
-    // ==================== Utility Functions ====================
-
-    toRadians(degrees) {
-        return degrees * (Math.PI / 180);
-    }
-
-    toDegrees(radians) {
-        return radians * (180 / Math.PI);
-    }
-
+    // ==================== Display ====================
     formatNumber(num) {
         if (typeof num === 'string') return num;
         if (!isFinite(num)) return 'Error';
+        if (Math.abs(num) < 1e-10 && num !== 0) return num.toExponential(6);
+        if (Math.abs(num) >= 1e12) return num.toExponential(6);
 
-        // Handle very small numbers close to zero
-        if (Math.abs(num) < 1e-10 && num !== 0) {
-            return num.toExponential(6);
-        }
-
-        // Handle very large numbers
-        if (Math.abs(num) >= 1e12) {
-            return num.toExponential(6);
-        }
-
-        // Round to avoid floating point issues
         const rounded = Math.round(num * 1e10) / 1e10;
-
-        // Convert to string and limit decimal places
         let str = rounded.toString();
 
-        // Limit total length
-        if (str.length > 12) {
-            if (str.includes('.')) {
-                const [intPart, decPart] = str.split('.');
-                const maxDecimals = Math.max(0, 11 - intPart.length);
-                str = rounded.toFixed(maxDecimals);
-            } else {
-                str = rounded.toExponential(6);
-            }
+        if (str.length > 14 && !str.includes('e')) {
+            str = rounded.toPrecision(10);
         }
-
         return str;
     }
 
-    // ==================== Display Updates ====================
-
     updateDisplay() {
         if (!this.resultDisplay) return;
-
-        let displayValue = this.currentInput;
-
-        // Add thousand separators for display (but not for scientific notation)
-        if (!displayValue.includes('e') && displayValue !== 'Error') {
-            const parts = displayValue.split('.');
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            displayValue = parts.join('.');
+        let display = this.currentInput;
+        if (!display.includes('e') && display !== 'Error') {
+            const [int, dec] = display.split('.');
+            display = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (dec !== undefined ? '.' + dec : '');
         }
-
-        this.resultDisplay.textContent = displayValue;
-
-        // Adjust font size for long numbers
-        if (displayValue.length > 10) {
-            this.resultDisplay.classList.add('small');
-        } else {
-            this.resultDisplay.classList.remove('small');
-        }
+        this.resultDisplay.textContent = display;
+        this.resultDisplay.classList.toggle('small', display.length > 12);
     }
 
     updateExpressionDisplay() {
-        if (!this.expressionDisplay) return;
-
-        if (this.operator && this.previousInput !== '') {
-            const opSymbol = { '+': '+', '-': '−', '*': '×', '/': '÷', '^': '^' };
-            this.expressionDisplay.textContent = `${this.formatNumber(this.previousInput)} ${opSymbol[this.operator] || this.operator}`;
-        }
+        if (!this.expressionDisplay || !this.operator) return;
+        const symbols = { '+': '+', '-': '−', '*': '×', '/': '÷', '^': '^',
+            mod: 'mod', gcd: 'gcd', lcm: 'lcm', nPr: 'P', nCr: 'C',
+            nthroot: '√', logbase: 'log', atan2: 'atan2' };
+        this.expressionDisplay.textContent = `${this.formatNumber(this.previousInput)} ${symbols[this.operator] || this.operator}`;
     }
 
     clearExpressionDisplay() {
-        if (this.expressionDisplay) {
-            this.expressionDisplay.textContent = '';
+        if (this.expressionDisplay) this.expressionDisplay.textContent = '';
+    }
+
+    // ==================== Equation Solver ====================
+    setupEquationSolver() {
+        // Tab switching
+        document.querySelectorAll('.eq-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.eq-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.equation-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`eq-${tab.dataset.eq}`)?.classList.add('active');
+            });
+        });
+
+        // Solve buttons
+        document.getElementById('solve-linear')?.addEventListener('click', () => this.solveLinear());
+        document.getElementById('solve-quadratic')?.addEventListener('click', () => this.solveQuadratic());
+        document.getElementById('solve-cubic')?.addEventListener('click', () => this.solveCubic());
+        document.getElementById('solve-system2')?.addEventListener('click', () => this.solveSystem2());
+    }
+
+    solveLinear() {
+        const a = parseFloat(document.getElementById('lin-a')?.value) || 0;
+        const b = parseFloat(document.getElementById('lin-b')?.value) || 0;
+        const result = document.getElementById('result-linear');
+
+        if (a === 0) {
+            result.innerHTML = b === 0
+                ? '<span class="solution">Infinite solutions (0 = 0)</span>'
+                : '<span class="error">No solution (contradiction)</span>';
+        } else {
+            const x = -b / a;
+            result.innerHTML = `<span class="solution">x = ${this.formatNumber(x)}</span>`;
         }
+    }
+
+    solveQuadratic() {
+        const a = parseFloat(document.getElementById('quad-a')?.value) || 0;
+        const b = parseFloat(document.getElementById('quad-b')?.value) || 0;
+        const c = parseFloat(document.getElementById('quad-c')?.value) || 0;
+        const result = document.getElementById('result-quadratic');
+
+        if (a === 0) {
+            if (b === 0) {
+                result.innerHTML = c === 0
+                    ? '<span class="solution">Infinite solutions</span>'
+                    : '<span class="error">No solution</span>';
+            } else {
+                result.innerHTML = `<span class="solution">x = ${this.formatNumber(-c / b)}</span>`;
+            }
+            return;
+        }
+
+        const discriminant = b * b - 4 * a * c;
+
+        if (discriminant > 0) {
+            const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+            const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+            result.innerHTML = `
+                <span class="solution">x₁ = ${this.formatNumber(x1)}</span>
+                <span class="solution">x₂ = ${this.formatNumber(x2)}</span>
+                <span style="color: var(--text-muted)">Δ = ${this.formatNumber(discriminant)}</span>
+            `;
+        } else if (discriminant === 0) {
+            const x = -b / (2 * a);
+            result.innerHTML = `
+                <span class="solution">x = ${this.formatNumber(x)} (double root)</span>
+                <span style="color: var(--text-muted)">Δ = 0</span>
+            `;
+        } else {
+            const real = -b / (2 * a);
+            const imag = Math.sqrt(-discriminant) / (2 * a);
+            result.innerHTML = `
+                <span class="complex">x₁ = ${this.formatNumber(real)} + ${this.formatNumber(imag)}i</span>
+                <span class="complex">x₂ = ${this.formatNumber(real)} - ${this.formatNumber(imag)}i</span>
+                <span style="color: var(--text-muted)">Δ = ${this.formatNumber(discriminant)} (complex roots)</span>
+            `;
+        }
+    }
+
+    solveCubic() {
+        let a = parseFloat(document.getElementById('cub-a')?.value) || 0;
+        let b = parseFloat(document.getElementById('cub-b')?.value) || 0;
+        let c = parseFloat(document.getElementById('cub-c')?.value) || 0;
+        let d = parseFloat(document.getElementById('cub-d')?.value) || 0;
+        const result = document.getElementById('result-cubic');
+
+        if (a === 0) {
+            result.innerHTML = '<span class="error">Not a cubic equation (a = 0)</span>';
+            return;
+        }
+
+        // Normalize: x³ + px² + qx + r = 0
+        b /= a; c /= a; d /= a;
+
+        const p = (3 * c - b * b) / 3;
+        const q = (2 * b * b * b - 9 * b * c + 27 * d) / 27;
+        const discriminant = (q * q / 4) + (p * p * p / 27);
+
+        const roots = [];
+
+        if (discriminant > 0) {
+            // One real root
+            const sqrtD = Math.sqrt(discriminant);
+            const u = Math.cbrt(-q / 2 + sqrtD);
+            const v = Math.cbrt(-q / 2 - sqrtD);
+            roots.push(u + v - b / 3);
+
+            const realPart = -(u + v) / 2 - b / 3;
+            const imagPart = Math.sqrt(3) * (u - v) / 2;
+            result.innerHTML = `
+                <span class="solution">x₁ = ${this.formatNumber(roots[0])}</span>
+                <span class="complex">x₂ = ${this.formatNumber(realPart)} + ${this.formatNumber(Math.abs(imagPart))}i</span>
+                <span class="complex">x₃ = ${this.formatNumber(realPart)} - ${this.formatNumber(Math.abs(imagPart))}i</span>
+            `;
+        } else if (discriminant === 0) {
+            // Multiple roots
+            const u = Math.cbrt(-q / 2);
+            roots.push(2 * u - b / 3);
+            roots.push(-u - b / 3);
+            result.innerHTML = `
+                <span class="solution">x₁ = ${this.formatNumber(roots[0])}</span>
+                <span class="solution">x₂ = x₃ = ${this.formatNumber(roots[1])} (double root)</span>
+            `;
+        } else {
+            // Three real roots (trigonometric method)
+            const r = Math.sqrt(-p * p * p / 27);
+            const phi = Math.acos(-q / (2 * r));
+            const t = 2 * Math.cbrt(r);
+
+            roots.push(t * Math.cos(phi / 3) - b / 3);
+            roots.push(t * Math.cos((phi + 2 * Math.PI) / 3) - b / 3);
+            roots.push(t * Math.cos((phi + 4 * Math.PI) / 3) - b / 3);
+
+            result.innerHTML = roots.map((r, i) =>
+                `<span class="solution">x${i + 1} = ${this.formatNumber(r)}</span>`
+            ).join('');
+        }
+    }
+
+    solveSystem2() {
+        const a1 = parseFloat(document.getElementById('sys-a1')?.value) || 0;
+        const b1 = parseFloat(document.getElementById('sys-b1')?.value) || 0;
+        const c1 = parseFloat(document.getElementById('sys-c1')?.value) || 0;
+        const a2 = parseFloat(document.getElementById('sys-a2')?.value) || 0;
+        const b2 = parseFloat(document.getElementById('sys-b2')?.value) || 0;
+        const c2 = parseFloat(document.getElementById('sys-c2')?.value) || 0;
+        const result = document.getElementById('result-system2');
+
+        const det = a1 * b2 - a2 * b1;
+
+        if (det === 0) {
+            const ratio1 = a1 !== 0 ? c1 / a1 : (b1 !== 0 ? c1 / b1 : 0);
+            const ratio2 = a2 !== 0 ? c2 / a2 : (b2 !== 0 ? c2 / b2 : 0);
+
+            if (Math.abs(ratio1 - ratio2) < 1e-10) {
+                result.innerHTML = '<span class="solution">Infinite solutions (dependent equations)</span>';
+            } else {
+                result.innerHTML = '<span class="error">No solution (parallel lines)</span>';
+            }
+        } else {
+            const x = (c1 * b2 - c2 * b1) / det;
+            const y = (a1 * c2 - a2 * c1) / det;
+            result.innerHTML = `
+                <span class="solution">x = ${this.formatNumber(x)}</span>
+                <span class="solution">y = ${this.formatNumber(y)}</span>
+            `;
+        }
+    }
+
+    // ==================== Statistics ====================
+    setupStatistics() {
+        document.getElementById('calc-stats')?.addEventListener('click', () => this.calculateStatistics());
+    }
+
+    calculateStatistics() {
+        const input = document.getElementById('stats-data')?.value || '';
+        const numbers = input.split(/[,\s]+/).map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+
+        if (numbers.length === 0) {
+            this.setStatValue('stat-n', '-');
+            return;
+        }
+
+        const n = numbers.length;
+        const sum = numbers.reduce((a, b) => a + b, 0);
+        const mean = sum / n;
+        const sorted = [...numbers].sort((a, b) => a - b);
+        const min = sorted[0];
+        const max = sorted[n - 1];
+        const range = max - min;
+
+        // Median
+        const median = n % 2 === 0
+            ? (sorted[n / 2 - 1] + sorted[n / 2]) / 2
+            : sorted[Math.floor(n / 2)];
+
+        // Mode
+        const freq = {};
+        numbers.forEach(x => freq[x] = (freq[x] || 0) + 1);
+        const maxFreq = Math.max(...Object.values(freq));
+        const modes = Object.keys(freq).filter(k => freq[k] === maxFreq);
+        const mode = maxFreq === 1 ? 'None' : modes.join(', ');
+
+        // Variance & Std Dev
+        const variance = numbers.reduce((acc, x) => acc + Math.pow(x - mean, 2), 0) / n;
+        const stddev = Math.sqrt(variance);
+        const sampleVar = n > 1 ? numbers.reduce((acc, x) => acc + Math.pow(x - mean, 2), 0) / (n - 1) : 0;
+        const sampleStd = Math.sqrt(sampleVar);
+
+        this.setStatValue('stat-n', n);
+        this.setStatValue('stat-sum', this.formatNumber(sum));
+        this.setStatValue('stat-mean', this.formatNumber(mean));
+        this.setStatValue('stat-median', this.formatNumber(median));
+        this.setStatValue('stat-mode', mode);
+        this.setStatValue('stat-range', this.formatNumber(range));
+        this.setStatValue('stat-min', this.formatNumber(min));
+        this.setStatValue('stat-max', this.formatNumber(max));
+        this.setStatValue('stat-variance', this.formatNumber(variance));
+        this.setStatValue('stat-stddev', this.formatNumber(stddev));
+        this.setStatValue('stat-samplevar', n > 1 ? this.formatNumber(sampleVar) : '-');
+        this.setStatValue('stat-samplestd', n > 1 ? this.formatNumber(sampleStd) : '-');
+    }
+
+    setStatValue(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    }
+
+    // ==================== Converters ====================
+    setupConverters() {
+        // Tab switching
+        document.querySelectorAll('.conv-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.conv-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.convert-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`conv-${tab.dataset.conv}`)?.classList.add('active');
+            });
+        });
+
+        this.setupBaseConverter();
+        this.setupUnitConverters();
+    }
+
+    setupBaseConverter() {
+        const dec = document.getElementById('base-dec');
+        const bin = document.getElementById('base-bin');
+        const oct = document.getElementById('base-oct');
+        const hex = document.getElementById('base-hex');
+
+        const updateFromDec = (val) => {
+            const num = parseInt(val) || 0;
+            if (bin) bin.value = num.toString(2);
+            if (oct) oct.value = num.toString(8);
+            if (hex) hex.value = num.toString(16).toUpperCase();
+        };
+
+        dec?.addEventListener('input', () => updateFromDec(dec.value));
+        bin?.addEventListener('input', () => {
+            const num = parseInt(bin.value, 2) || 0;
+            if (dec) dec.value = num;
+            if (oct) oct.value = num.toString(8);
+            if (hex) hex.value = num.toString(16).toUpperCase();
+        });
+        oct?.addEventListener('input', () => {
+            const num = parseInt(oct.value, 8) || 0;
+            if (dec) dec.value = num;
+            if (bin) bin.value = num.toString(2);
+            if (hex) hex.value = num.toString(16).toUpperCase();
+        });
+        hex?.addEventListener('input', () => {
+            const num = parseInt(hex.value, 16) || 0;
+            if (dec) dec.value = num;
+            if (bin) bin.value = num.toString(2);
+            if (oct) oct.value = num.toString(8);
+        });
+    }
+
+    setupUnitConverters() {
+        // Length
+        const lengthFactors = { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.344, yd: 0.9144, ft: 0.3048, in: 0.0254 };
+        this.setupConverter('length', lengthFactors);
+
+        // Mass
+        const massFactors = { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495, t: 1000 };
+        this.setupConverter('mass', massFactors);
+
+        // Area
+        const areaFactors = { m2: 1, km2: 1000000, cm2: 0.0001, ha: 10000, ac: 4046.86, ft2: 0.092903, mi2: 2590000 };
+        this.setupConverter('area', areaFactors);
+
+        // Temperature (special handling)
+        this.setupTempConverter();
+    }
+
+    setupConverter(type, factors) {
+        const val = document.getElementById(`${type}-val`);
+        const from = document.getElementById(`${type}-from`);
+        const to = document.getElementById(`${type}-to`);
+        const result = document.getElementById(`${type}-result`);
+
+        const convert = () => {
+            if (!val || !from || !to || !result) return;
+            const value = parseFloat(val.value) || 0;
+            const inMeters = value * factors[from.value];
+            const converted = inMeters / factors[to.value];
+            result.value = this.formatNumber(converted);
+        };
+
+        val?.addEventListener('input', convert);
+        from?.addEventListener('change', convert);
+        to?.addEventListener('change', convert);
+    }
+
+    setupTempConverter() {
+        const val = document.getElementById('temp-val');
+        const from = document.getElementById('temp-from');
+        const to = document.getElementById('temp-to');
+        const result = document.getElementById('temp-result');
+
+        const convert = () => {
+            if (!val || !from || !to || !result) return;
+            const value = parseFloat(val.value) || 0;
+
+            // Convert to Celsius first
+            let celsius;
+            switch (from.value) {
+                case 'c': celsius = value; break;
+                case 'f': celsius = (value - 32) * 5 / 9; break;
+                case 'k': celsius = value - 273.15; break;
+            }
+
+            // Convert from Celsius to target
+            let converted;
+            switch (to.value) {
+                case 'c': converted = celsius; break;
+                case 'f': converted = celsius * 9 / 5 + 32; break;
+                case 'k': converted = celsius + 273.15; break;
+            }
+
+            result.value = this.formatNumber(converted);
+        };
+
+        val?.addEventListener('input', convert);
+        from?.addEventListener('change', convert);
+        to?.addEventListener('change', convert);
     }
 }
 
-// Initialize when DOM is ready
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    window.calculator = new ScientificCalculator();
+    window.calculator = new AdvancedCalculator();
 });
