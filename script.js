@@ -516,9 +516,30 @@ class AdvancedCalculator {
         document.getElementById('solve-system2')?.addEventListener('click', () => this.solveSystem2());
     }
 
+    // Parse a value that could be a number or fraction (e.g., "1/2", "-3/4", "2.5")
+    parseValue(str) {
+        if (!str || str.trim() === '') return 0;
+        str = str.trim();
+
+        // Check if it's a fraction
+        if (str.includes('/')) {
+            const parts = str.split('/');
+            if (parts.length === 2) {
+                const num = parseFloat(parts[0]);
+                const den = parseFloat(parts[1]);
+                if (!isNaN(num) && !isNaN(den) && den !== 0) {
+                    return num / den;
+                }
+            }
+            return NaN;
+        }
+
+        return parseFloat(str) || 0;
+    }
+
     solveLinear() {
-        const a = parseFloat(document.getElementById('lin-a')?.value) || 0;
-        const b = parseFloat(document.getElementById('lin-b')?.value) || 0;
+        const a = this.parseValue(document.getElementById('lin-a')?.value);
+        const b = this.parseValue(document.getElementById('lin-b')?.value);
         const result = document.getElementById('result-linear');
 
         if (a === 0) {
@@ -532,9 +553,9 @@ class AdvancedCalculator {
     }
 
     solveQuadratic() {
-        const a = parseFloat(document.getElementById('quad-a')?.value) || 0;
-        const b = parseFloat(document.getElementById('quad-b')?.value) || 0;
-        const c = parseFloat(document.getElementById('quad-c')?.value) || 0;
+        const a = this.parseValue(document.getElementById('quad-a')?.value);
+        const b = this.parseValue(document.getElementById('quad-b')?.value);
+        const c = this.parseValue(document.getElementById('quad-c')?.value);
         const result = document.getElementById('result-quadratic');
 
         if (a === 0) {
@@ -576,10 +597,10 @@ class AdvancedCalculator {
     }
 
     solveCubic() {
-        let a = parseFloat(document.getElementById('cub-a')?.value) || 0;
-        let b = parseFloat(document.getElementById('cub-b')?.value) || 0;
-        let c = parseFloat(document.getElementById('cub-c')?.value) || 0;
-        let d = parseFloat(document.getElementById('cub-d')?.value) || 0;
+        let a = this.parseValue(document.getElementById('cub-a')?.value);
+        let b = this.parseValue(document.getElementById('cub-b')?.value);
+        let c = this.parseValue(document.getElementById('cub-c')?.value);
+        let d = this.parseValue(document.getElementById('cub-d')?.value);
         const result = document.getElementById('result-cubic');
 
         if (a === 0) {
@@ -636,12 +657,12 @@ class AdvancedCalculator {
     }
 
     solveSystem2() {
-        const a1 = parseFloat(document.getElementById('sys-a1')?.value) || 0;
-        const b1 = parseFloat(document.getElementById('sys-b1')?.value) || 0;
-        const c1 = parseFloat(document.getElementById('sys-c1')?.value) || 0;
-        const a2 = parseFloat(document.getElementById('sys-a2')?.value) || 0;
-        const b2 = parseFloat(document.getElementById('sys-b2')?.value) || 0;
-        const c2 = parseFloat(document.getElementById('sys-c2')?.value) || 0;
+        const a1 = this.parseValue(document.getElementById('sys-a1')?.value);
+        const b1 = this.parseValue(document.getElementById('sys-b1')?.value);
+        const c1 = this.parseValue(document.getElementById('sys-c1')?.value);
+        const a2 = this.parseValue(document.getElementById('sys-a2')?.value);
+        const b2 = this.parseValue(document.getElementById('sys-b2')?.value);
+        const c2 = this.parseValue(document.getElementById('sys-c2')?.value);
         const result = document.getElementById('result-system2');
 
         const det = a1 * b2 - a2 * b1;
