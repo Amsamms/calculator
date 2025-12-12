@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scientific Calculator Pro</title>
+    <title>Advanced Scientific Calculator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -34,10 +34,16 @@
                     <line x1="8" y1="18" x2="10" y2="18"/>
                     <line x1="14" y1="18" x2="16" y2="18"/>
                 </svg>
-                <span class="logo-text">CalcPro</span>
+                <span class="logo-text">CalcPro+</span>
             </div>
             <div class="header-actions">
-                <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+                <button class="header-btn" id="historyToggle" title="History">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </button>
+                <button class="header-btn" id="themeToggle" title="Toggle Theme">
                     <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"/>
                         <line x1="12" y1="1" x2="12" y2="3"/>
@@ -57,28 +63,469 @@
         </header>
 
         <main class="calculator">
-            <!-- Display Section -->
-            <section class="display-section">
-                <div class="history-preview" id="historyPreview">
-                    <button class="history-toggle" id="historyToggle" title="View History">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
-                        </svg>
-                    </button>
+            <!-- Mode Selector -->
+            <nav class="mode-nav">
+                <button class="mode-btn active" data-mode="calc">Calculator</button>
+                <button class="mode-btn" data-mode="equation">Equations</button>
+                <button class="mode-btn" data-mode="stats">Statistics</button>
+                <button class="mode-btn" data-mode="convert">Convert</button>
+            </nav>
+
+            <!-- Calculator Mode -->
+            <section class="mode-panel active" id="mode-calc">
+                <!-- Display Section -->
+                <div class="display-section">
+                    <div class="display-container">
+                        <div class="expression" id="expression"></div>
+                        <div class="result" id="result">0</div>
+                    </div>
+                    <div class="display-controls">
+                        <button class="mode-toggle" id="angleToggle">
+                            <span class="mode-label">RAD</span>
+                        </button>
+                        <button class="mode-toggle" id="baseToggle">
+                            <span class="mode-label">DEC</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="display-container">
-                    <div class="expression" id="expression"></div>
-                    <div class="result" id="result">0</div>
+
+                <!-- Scientific Functions (Multi-Layer) -->
+                <div class="scientific-section">
+                    <div class="layer-tabs">
+                        <button class="layer-tab active" data-layer="basic">Basic</button>
+                        <button class="layer-tab" data-layer="trig">Trig</button>
+                        <button class="layer-tab" data-layer="hyper">Hyper</button>
+                        <button class="layer-tab" data-layer="func">Func</button>
+                        <button class="layer-tab" data-layer="const">Const</button>
+                    </div>
+
+                    <div class="layer-contents">
+                        <!-- Basic Layer -->
+                        <div class="layer-content active" id="layer-basic">
+                            <button class="btn sci" data-action="percent">%</button>
+                            <button class="btn sci" data-action="sqrt">√x</button>
+                            <button class="btn sci" data-action="cbrt">³√x</button>
+                            <button class="btn sci" data-action="nthroot">ⁿ√x</button>
+                            <button class="btn sci" data-action="power">x²</button>
+                            <button class="btn sci" data-action="cube">x³</button>
+                            <button class="btn sci" data-action="powerOf">xʸ</button>
+                            <button class="btn sci" data-action="exp10">10ˣ</button>
+                            <button class="btn sci" data-action="inverse">1/x</button>
+                            <button class="btn sci" data-action="abs">|x|</button>
+                        </div>
+
+                        <!-- Trigonometry Layer -->
+                        <div class="layer-content" id="layer-trig">
+                            <button class="btn sci" data-action="sin">sin</button>
+                            <button class="btn sci" data-action="cos">cos</button>
+                            <button class="btn sci" data-action="tan">tan</button>
+                            <button class="btn sci" data-action="csc">csc</button>
+                            <button class="btn sci" data-action="sec">sec</button>
+                            <button class="btn sci" data-action="cot">cot</button>
+                            <button class="btn sci" data-action="asin">sin⁻¹</button>
+                            <button class="btn sci" data-action="acos">cos⁻¹</button>
+                            <button class="btn sci" data-action="atan">tan⁻¹</button>
+                            <button class="btn sci" data-action="atan2">atan2</button>
+                        </div>
+
+                        <!-- Hyperbolic Layer -->
+                        <div class="layer-content" id="layer-hyper">
+                            <button class="btn sci" data-action="sinh">sinh</button>
+                            <button class="btn sci" data-action="cosh">cosh</button>
+                            <button class="btn sci" data-action="tanh">tanh</button>
+                            <button class="btn sci" data-action="csch">csch</button>
+                            <button class="btn sci" data-action="sech">sech</button>
+                            <button class="btn sci" data-action="coth">coth</button>
+                            <button class="btn sci" data-action="asinh">sinh⁻¹</button>
+                            <button class="btn sci" data-action="acosh">cosh⁻¹</button>
+                            <button class="btn sci" data-action="atanh">tanh⁻¹</button>
+                            <button class="btn sci" data-action="exp">eˣ</button>
+                        </div>
+
+                        <!-- Functions Layer -->
+                        <div class="layer-content" id="layer-func">
+                            <button class="btn sci" data-action="log">log₁₀</button>
+                            <button class="btn sci" data-action="ln">ln</button>
+                            <button class="btn sci" data-action="log2">log₂</button>
+                            <button class="btn sci" data-action="logbase">logₓ</button>
+                            <button class="btn sci" data-action="factorial">n!</button>
+                            <button class="btn sci" data-action="nPr">nPr</button>
+                            <button class="btn sci" data-action="nCr">nCr</button>
+                            <button class="btn sci" data-action="gcd">GCD</button>
+                            <button class="btn sci" data-action="lcm">LCM</button>
+                            <button class="btn sci" data-action="mod">mod</button>
+                        </div>
+
+                        <!-- Constants Layer -->
+                        <div class="layer-content" id="layer-const">
+                            <button class="btn sci" data-action="pi">π</button>
+                            <button class="btn sci" data-action="e">e</button>
+                            <button class="btn sci" data-action="phi">φ</button>
+                            <button class="btn sci" data-action="sqrt2">√2</button>
+                            <button class="btn sci" data-action="sqrt3">√3</button>
+                            <button class="btn sci" data-action="ln2">ln2</button>
+                            <button class="btn sci" data-action="ln10">ln10</button>
+                            <button class="btn sci" data-action="c">c</button>
+                            <button class="btn sci" data-action="g">g</button>
+                            <button class="btn sci" data-action="rand">RND</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="display-controls">
-                    <button class="mode-toggle" id="angleToggle">
-                        <span class="mode-label">RAD</span>
-                    </button>
+
+                <!-- Main Buttons Grid -->
+                <div class="buttons-section">
+                    <div class="buttons-grid">
+                        <button class="btn clear" data-action="clear">AC</button>
+                        <button class="btn clear" data-action="clearEntry">CE</button>
+                        <button class="btn func" data-action="backspace">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
+                                <line x1="18" y1="9" x2="12" y2="15"/>
+                                <line x1="12" y1="9" x2="18" y2="15"/>
+                            </svg>
+                        </button>
+                        <button class="btn op" data-action="divide">÷</button>
+
+                        <button class="btn num" data-number="7">7</button>
+                        <button class="btn num" data-number="8">8</button>
+                        <button class="btn num" data-number="9">9</button>
+                        <button class="btn op" data-action="multiply">×</button>
+
+                        <button class="btn num" data-number="4">4</button>
+                        <button class="btn num" data-number="5">5</button>
+                        <button class="btn num" data-number="6">6</button>
+                        <button class="btn op" data-action="subtract">−</button>
+
+                        <button class="btn num" data-number="1">1</button>
+                        <button class="btn num" data-number="2">2</button>
+                        <button class="btn num" data-number="3">3</button>
+                        <button class="btn op" data-action="add">+</button>
+
+                        <button class="btn num" data-action="negate">±</button>
+                        <button class="btn num" data-number="0">0</button>
+                        <button class="btn num" data-action="decimal">.</button>
+                        <button class="btn equals" data-action="equals">=</button>
+                    </div>
                 </div>
             </section>
 
-            <!-- History Panel (Expandable) -->
+            <!-- Equation Solver Mode -->
+            <section class="mode-panel" id="mode-equation">
+                <div class="equation-section">
+                    <div class="equation-tabs">
+                        <button class="eq-tab active" data-eq="linear">Linear</button>
+                        <button class="eq-tab" data-eq="quadratic">Quadratic</button>
+                        <button class="eq-tab" data-eq="cubic">Cubic</button>
+                        <button class="eq-tab" data-eq="system2">2×2 System</button>
+                    </div>
+
+                    <!-- Linear: ax + b = 0 -->
+                    <div class="equation-panel active" id="eq-linear">
+                        <div class="eq-title">Linear Equation: ax + b = 0</div>
+                        <div class="eq-inputs">
+                            <div class="eq-field">
+                                <label>a</label>
+                                <input type="number" id="lin-a" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>b</label>
+                                <input type="number" id="lin-b" placeholder="0" step="any">
+                            </div>
+                        </div>
+                        <button class="solve-btn" id="solve-linear">Solve</button>
+                        <div class="eq-result" id="result-linear"></div>
+                    </div>
+
+                    <!-- Quadratic: ax² + bx + c = 0 -->
+                    <div class="equation-panel" id="eq-quadratic">
+                        <div class="eq-title">Quadratic: ax² + bx + c = 0</div>
+                        <div class="eq-inputs">
+                            <div class="eq-field">
+                                <label>a</label>
+                                <input type="number" id="quad-a" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>b</label>
+                                <input type="number" id="quad-b" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>c</label>
+                                <input type="number" id="quad-c" placeholder="0" step="any">
+                            </div>
+                        </div>
+                        <button class="solve-btn" id="solve-quadratic">Solve</button>
+                        <div class="eq-result" id="result-quadratic"></div>
+                    </div>
+
+                    <!-- Cubic: ax³ + bx² + cx + d = 0 -->
+                    <div class="equation-panel" id="eq-cubic">
+                        <div class="eq-title">Cubic: ax³ + bx² + cx + d = 0</div>
+                        <div class="eq-inputs">
+                            <div class="eq-field">
+                                <label>a</label>
+                                <input type="number" id="cub-a" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>b</label>
+                                <input type="number" id="cub-b" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>c</label>
+                                <input type="number" id="cub-c" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>d</label>
+                                <input type="number" id="cub-d" placeholder="0" step="any">
+                            </div>
+                        </div>
+                        <button class="solve-btn" id="solve-cubic">Solve</button>
+                        <div class="eq-result" id="result-cubic"></div>
+                    </div>
+
+                    <!-- 2x2 System -->
+                    <div class="equation-panel" id="eq-system2">
+                        <div class="eq-title">System of 2 Equations</div>
+                        <div class="eq-system-label">a₁x + b₁y = c₁</div>
+                        <div class="eq-inputs">
+                            <div class="eq-field">
+                                <label>a₁</label>
+                                <input type="number" id="sys-a1" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>b₁</label>
+                                <input type="number" id="sys-b1" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>c₁</label>
+                                <input type="number" id="sys-c1" placeholder="0" step="any">
+                            </div>
+                        </div>
+                        <div class="eq-system-label">a₂x + b₂y = c₂</div>
+                        <div class="eq-inputs">
+                            <div class="eq-field">
+                                <label>a₂</label>
+                                <input type="number" id="sys-a2" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>b₂</label>
+                                <input type="number" id="sys-b2" placeholder="0" step="any">
+                            </div>
+                            <div class="eq-field">
+                                <label>c₂</label>
+                                <input type="number" id="sys-c2" placeholder="0" step="any">
+                            </div>
+                        </div>
+                        <button class="solve-btn" id="solve-system2">Solve</button>
+                        <div class="eq-result" id="result-system2"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics Mode -->
+            <section class="mode-panel" id="mode-stats">
+                <div class="stats-section">
+                    <div class="stats-input-area">
+                        <label>Enter data (comma or space separated):</label>
+                        <textarea id="stats-data" placeholder="e.g., 1, 2, 3, 4, 5 or 1 2 3 4 5"></textarea>
+                        <button class="solve-btn" id="calc-stats">Calculate Statistics</button>
+                    </div>
+                    <div class="stats-results" id="stats-results">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Count (n)</span>
+                                <span class="stat-value" id="stat-n">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Sum (Σx)</span>
+                                <span class="stat-value" id="stat-sum">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Mean (x̄)</span>
+                                <span class="stat-value" id="stat-mean">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Median</span>
+                                <span class="stat-value" id="stat-median">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Mode</span>
+                                <span class="stat-value" id="stat-mode">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Range</span>
+                                <span class="stat-value" id="stat-range">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Min</span>
+                                <span class="stat-value" id="stat-min">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Max</span>
+                                <span class="stat-value" id="stat-max">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Variance (σ²)</span>
+                                <span class="stat-value" id="stat-variance">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Std Dev (σ)</span>
+                                <span class="stat-value" id="stat-stddev">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Sample Var (s²)</span>
+                                <span class="stat-value" id="stat-samplevar">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Sample Std (s)</span>
+                                <span class="stat-value" id="stat-samplestd">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Converter Mode -->
+            <section class="mode-panel" id="mode-convert">
+                <div class="convert-section">
+                    <div class="convert-tabs">
+                        <button class="conv-tab active" data-conv="base">Base</button>
+                        <button class="conv-tab" data-conv="length">Length</button>
+                        <button class="conv-tab" data-conv="mass">Mass</button>
+                        <button class="conv-tab" data-conv="temp">Temp</button>
+                        <button class="conv-tab" data-conv="area">Area</button>
+                    </div>
+
+                    <!-- Base Converter -->
+                    <div class="convert-panel active" id="conv-base">
+                        <div class="conv-input-group">
+                            <label>Decimal (Base 10)</label>
+                            <input type="text" id="base-dec" placeholder="0">
+                        </div>
+                        <div class="conv-input-group">
+                            <label>Binary (Base 2)</label>
+                            <input type="text" id="base-bin" placeholder="0">
+                        </div>
+                        <div class="conv-input-group">
+                            <label>Octal (Base 8)</label>
+                            <input type="text" id="base-oct" placeholder="0">
+                        </div>
+                        <div class="conv-input-group">
+                            <label>Hexadecimal (Base 16)</label>
+                            <input type="text" id="base-hex" placeholder="0">
+                        </div>
+                    </div>
+
+                    <!-- Length Converter -->
+                    <div class="convert-panel" id="conv-length">
+                        <div class="conv-row">
+                            <input type="number" id="length-val" placeholder="0" step="any">
+                            <select id="length-from">
+                                <option value="m">Meters</option>
+                                <option value="km">Kilometers</option>
+                                <option value="cm">Centimeters</option>
+                                <option value="mm">Millimeters</option>
+                                <option value="mi">Miles</option>
+                                <option value="yd">Yards</option>
+                                <option value="ft">Feet</option>
+                                <option value="in">Inches</option>
+                            </select>
+                        </div>
+                        <div class="conv-arrow">↓</div>
+                        <div class="conv-row">
+                            <input type="text" id="length-result" readonly placeholder="Result">
+                            <select id="length-to">
+                                <option value="km">Kilometers</option>
+                                <option value="m">Meters</option>
+                                <option value="cm">Centimeters</option>
+                                <option value="mm">Millimeters</option>
+                                <option value="mi">Miles</option>
+                                <option value="yd">Yards</option>
+                                <option value="ft">Feet</option>
+                                <option value="in">Inches</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Mass Converter -->
+                    <div class="convert-panel" id="conv-mass">
+                        <div class="conv-row">
+                            <input type="number" id="mass-val" placeholder="0" step="any">
+                            <select id="mass-from">
+                                <option value="kg">Kilograms</option>
+                                <option value="g">Grams</option>
+                                <option value="mg">Milligrams</option>
+                                <option value="lb">Pounds</option>
+                                <option value="oz">Ounces</option>
+                                <option value="t">Metric Tons</option>
+                            </select>
+                        </div>
+                        <div class="conv-arrow">↓</div>
+                        <div class="conv-row">
+                            <input type="text" id="mass-result" readonly placeholder="Result">
+                            <select id="mass-to">
+                                <option value="lb">Pounds</option>
+                                <option value="kg">Kilograms</option>
+                                <option value="g">Grams</option>
+                                <option value="mg">Milligrams</option>
+                                <option value="oz">Ounces</option>
+                                <option value="t">Metric Tons</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Temperature Converter -->
+                    <div class="convert-panel" id="conv-temp">
+                        <div class="conv-row">
+                            <input type="number" id="temp-val" placeholder="0" step="any">
+                            <select id="temp-from">
+                                <option value="c">Celsius</option>
+                                <option value="f">Fahrenheit</option>
+                                <option value="k">Kelvin</option>
+                            </select>
+                        </div>
+                        <div class="conv-arrow">↓</div>
+                        <div class="conv-row">
+                            <input type="text" id="temp-result" readonly placeholder="Result">
+                            <select id="temp-to">
+                                <option value="f">Fahrenheit</option>
+                                <option value="c">Celsius</option>
+                                <option value="k">Kelvin</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Area Converter -->
+                    <div class="convert-panel" id="conv-area">
+                        <div class="conv-row">
+                            <input type="number" id="area-val" placeholder="0" step="any">
+                            <select id="area-from">
+                                <option value="m2">Square Meters</option>
+                                <option value="km2">Square Kilometers</option>
+                                <option value="cm2">Square Centimeters</option>
+                                <option value="ha">Hectares</option>
+                                <option value="ac">Acres</option>
+                                <option value="ft2">Square Feet</option>
+                                <option value="mi2">Square Miles</option>
+                            </select>
+                        </div>
+                        <div class="conv-arrow">↓</div>
+                        <div class="conv-row">
+                            <input type="text" id="area-result" readonly placeholder="Result">
+                            <select id="area-to">
+                                <option value="ft2">Square Feet</option>
+                                <option value="m2">Square Meters</option>
+                                <option value="km2">Square Kilometers</option>
+                                <option value="cm2">Square Centimeters</option>
+                                <option value="ha">Hectares</option>
+                                <option value="ac">Acres</option>
+                                <option value="mi2">Square Miles</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Panel -->
             <section class="history-panel" id="historyPanel">
                 <div class="history-header">
                     <h3>History</h3>
@@ -88,93 +535,7 @@
                     <div class="history-empty">No calculations yet</div>
                 </div>
             </section>
-
-            <!-- Scientific Functions (Multi-Layer) -->
-            <section class="scientific-section">
-                <!-- Layer Tabs -->
-                <div class="layer-tabs">
-                    <button class="layer-tab active" data-layer="basic">Basic</button>
-                    <button class="layer-tab" data-layer="trig">Trig</button>
-                    <button class="layer-tab" data-layer="func">Func</button>
-                </div>
-
-                <!-- Layer Contents -->
-                <div class="layer-contents">
-                    <!-- Basic Layer -->
-                    <div class="layer-content active" id="layer-basic">
-                        <button class="btn sci" data-action="percent">%</button>
-                        <button class="btn sci" data-action="sqrt">√</button>
-                        <button class="btn sci" data-action="power">x²</button>
-                        <button class="btn sci" data-action="powerOf">xʸ</button>
-                        <button class="btn sci" data-action="inverse">1/x</button>
-                    </div>
-
-                    <!-- Trigonometry Layer -->
-                    <div class="layer-content" id="layer-trig">
-                        <button class="btn sci" data-action="sin">sin</button>
-                        <button class="btn sci" data-action="cos">cos</button>
-                        <button class="btn sci" data-action="tan">tan</button>
-                        <button class="btn sci" data-action="asin">sin⁻¹</button>
-                        <button class="btn sci" data-action="acos">cos⁻¹</button>
-                    </div>
-
-                    <!-- Functions Layer -->
-                    <div class="layer-content" id="layer-func">
-                        <button class="btn sci" data-action="log">log</button>
-                        <button class="btn sci" data-action="ln">ln</button>
-                        <button class="btn sci" data-action="factorial">n!</button>
-                        <button class="btn sci" data-action="pi">π</button>
-                        <button class="btn sci" data-action="e">e</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Main Buttons Grid -->
-            <section class="buttons-section">
-                <div class="buttons-grid">
-                    <!-- Row 1 -->
-                    <button class="btn clear" data-action="clear">AC</button>
-                    <button class="btn clear" data-action="clearEntry">CE</button>
-                    <button class="btn func" data-action="backspace">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
-                            <line x1="18" y1="9" x2="12" y2="15"/>
-                            <line x1="12" y1="9" x2="18" y2="15"/>
-                        </svg>
-                    </button>
-                    <button class="btn op" data-action="divide">÷</button>
-
-                    <!-- Row 2 -->
-                    <button class="btn num" data-number="7">7</button>
-                    <button class="btn num" data-number="8">8</button>
-                    <button class="btn num" data-number="9">9</button>
-                    <button class="btn op" data-action="multiply">×</button>
-
-                    <!-- Row 3 -->
-                    <button class="btn num" data-number="4">4</button>
-                    <button class="btn num" data-number="5">5</button>
-                    <button class="btn num" data-number="6">6</button>
-                    <button class="btn op" data-action="subtract">−</button>
-
-                    <!-- Row 4 -->
-                    <button class="btn num" data-number="1">1</button>
-                    <button class="btn num" data-number="2">2</button>
-                    <button class="btn num" data-number="3">3</button>
-                    <button class="btn op" data-action="add">+</button>
-
-                    <!-- Row 5 -->
-                    <button class="btn num" data-action="negate">±</button>
-                    <button class="btn num" data-number="0">0</button>
-                    <button class="btn num" data-action="decimal">.</button>
-                    <button class="btn equals" data-action="equals">=</button>
-                </div>
-            </section>
         </main>
-
-        <!-- Footer -->
-        <footer class="calc-footer">
-            <span>Swipe up for more functions</span>
-        </footer>
     </div>
 
     <script src="script.js"></script>
