@@ -636,9 +636,35 @@ body {
 }
 
 .eq-inputs {
-    display: flex;
+    display: grid;
     gap: 10px;
     margin-bottom: 12px;
+}
+
+.eq-inputs.two-col {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.eq-inputs.three-col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.eq-inputs.four-col {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 400px) {
+    .eq-inputs.four-col {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.eq-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    text-align: center;
+    font-style: italic;
 }
 
 .eq-field {

@@ -222,16 +222,17 @@
                     <!-- Linear: ax + b = 0 -->
                     <div class="equation-panel active" id="eq-linear">
                         <div class="eq-title">Linear Equation: ax + b = 0</div>
-                        <div class="eq-inputs">
+                        <div class="eq-inputs two-col">
                             <div class="eq-field">
                                 <label>a</label>
-                                <input type="number" id="lin-a" placeholder="0" step="any">
+                                <input type="text" id="lin-a" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>b</label>
-                                <input type="number" id="lin-b" placeholder="0" step="any">
+                                <input type="text" id="lin-b" placeholder="0" inputmode="decimal">
                             </div>
                         </div>
+                        <div class="eq-hint">Supports fractions: 1/2, -3/4</div>
                         <button class="solve-btn" id="solve-linear">Solve</button>
                         <div class="eq-result" id="result-linear"></div>
                     </div>
@@ -239,20 +240,21 @@
                     <!-- Quadratic: ax² + bx + c = 0 -->
                     <div class="equation-panel" id="eq-quadratic">
                         <div class="eq-title">Quadratic: ax² + bx + c = 0</div>
-                        <div class="eq-inputs">
+                        <div class="eq-inputs three-col">
                             <div class="eq-field">
                                 <label>a</label>
-                                <input type="number" id="quad-a" placeholder="0" step="any">
+                                <input type="text" id="quad-a" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>b</label>
-                                <input type="number" id="quad-b" placeholder="0" step="any">
+                                <input type="text" id="quad-b" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>c</label>
-                                <input type="number" id="quad-c" placeholder="0" step="any">
+                                <input type="text" id="quad-c" placeholder="0" inputmode="decimal">
                             </div>
                         </div>
+                        <div class="eq-hint">Supports fractions: 1/2, -3/4</div>
                         <button class="solve-btn" id="solve-quadratic">Solve</button>
                         <div class="eq-result" id="result-quadratic"></div>
                     </div>
@@ -260,24 +262,25 @@
                     <!-- Cubic: ax³ + bx² + cx + d = 0 -->
                     <div class="equation-panel" id="eq-cubic">
                         <div class="eq-title">Cubic: ax³ + bx² + cx + d = 0</div>
-                        <div class="eq-inputs">
+                        <div class="eq-inputs four-col">
                             <div class="eq-field">
                                 <label>a</label>
-                                <input type="number" id="cub-a" placeholder="0" step="any">
+                                <input type="text" id="cub-a" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>b</label>
-                                <input type="number" id="cub-b" placeholder="0" step="any">
+                                <input type="text" id="cub-b" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>c</label>
-                                <input type="number" id="cub-c" placeholder="0" step="any">
+                                <input type="text" id="cub-c" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>d</label>
-                                <input type="number" id="cub-d" placeholder="0" step="any">
+                                <input type="text" id="cub-d" placeholder="0" inputmode="decimal">
                             </div>
                         </div>
+                        <div class="eq-hint">Supports fractions: 1/2, -3/4</div>
                         <button class="solve-btn" id="solve-cubic">Solve</button>
                         <div class="eq-result" id="result-cubic"></div>
                     </div>
@@ -286,35 +289,36 @@
                     <div class="equation-panel" id="eq-system2">
                         <div class="eq-title">System of 2 Equations</div>
                         <div class="eq-system-label">a₁x + b₁y = c₁</div>
-                        <div class="eq-inputs">
+                        <div class="eq-inputs three-col">
                             <div class="eq-field">
                                 <label>a₁</label>
-                                <input type="number" id="sys-a1" placeholder="0" step="any">
+                                <input type="text" id="sys-a1" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>b₁</label>
-                                <input type="number" id="sys-b1" placeholder="0" step="any">
+                                <input type="text" id="sys-b1" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>c₁</label>
-                                <input type="number" id="sys-c1" placeholder="0" step="any">
+                                <input type="text" id="sys-c1" placeholder="0" inputmode="decimal">
                             </div>
                         </div>
                         <div class="eq-system-label">a₂x + b₂y = c₂</div>
-                        <div class="eq-inputs">
+                        <div class="eq-inputs three-col">
                             <div class="eq-field">
                                 <label>a₂</label>
-                                <input type="number" id="sys-a2" placeholder="0" step="any">
+                                <input type="text" id="sys-a2" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>b₂</label>
-                                <input type="number" id="sys-b2" placeholder="0" step="any">
+                                <input type="text" id="sys-b2" placeholder="0" inputmode="decimal">
                             </div>
                             <div class="eq-field">
                                 <label>c₂</label>
-                                <input type="number" id="sys-c2" placeholder="0" step="any">
+                                <input type="text" id="sys-c2" placeholder="0" inputmode="decimal">
                             </div>
                         </div>
+                        <div class="eq-hint">Supports fractions: 1/2, -3/4</div>
                         <button class="solve-btn" id="solve-system2">Solve</button>
                         <div class="eq-result" id="result-system2"></div>
                     </div>
